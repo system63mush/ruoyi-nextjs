@@ -8,6 +8,7 @@ export interface Column {
   label: string;
   sortable?: boolean;
   width?: string;
+  render?: (value: unknown, record: Record<string, unknown>) => React.ReactNode;
 }
 
 interface DataTableProps {
@@ -140,7 +141,7 @@ export default function DataTable({
               >
                 {columns.map((column) => (
                   <td key={column.key} className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                    {String(row[column.key] || '')}
+                    {column.render ? column.render(row[column.key], row) : String(row[column.key] || '')}
                   </td>
                 ))}
               </tr>

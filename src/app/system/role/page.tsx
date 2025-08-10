@@ -97,22 +97,22 @@ export default function RolePage() {
   const columns: Column[] = [
     {
       key: 'roleName',
-      title: '角色名称',
+      label: '角色名称',
       sortable: true
     },
     {
       key: 'roleKey',
-      title: '角色标识',
+      label: '角色标识',
       sortable: true
     },
     {
       key: 'roleSort',
-      title: '排序',
+      label: '排序',
       sortable: true
     },
     {
       key: 'status',
-      title: '状态',
+      label: '状态',
       render: (value) => (
         <span className={`px-2 py-1 text-xs rounded-full ${
           value === 'active' 
@@ -125,26 +125,26 @@ export default function RolePage() {
     },
     {
       key: 'description',
-      title: '描述',
+      label: '描述',
       render: (value) => (
-        <span className="max-w-xs truncate" title={value}>
-          {value}
+        <span className="max-w-xs truncate" title={String(value)}>
+          {String(value)}
         </span>
       )
     },
     {
       key: 'userCount',
-      title: '用户数量',
+      label: '用户数量',
       sortable: true,
       render: (value) => (
         <span className="px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400 rounded-full text-xs">
-          {value} 人
+          {String(value)} 人
         </span>
       )
     },
     {
       key: 'createTime',
-      title: '创建时间',
+      label: '创建时间',
       sortable: true
     }
   ];
@@ -325,14 +325,9 @@ export default function RolePage() {
           {/* 角色列表 */}
           <DataTable
             columns={columns}
-            data={paginatedRoles}
+            data={filteredRoles}
             loading={loading}
-            pagination={{
-              current: currentPage,
-              pageSize,
-              total: filteredRoles.length,
-              onChange: (page) => setCurrentPage(page)
-            }}
+            pageSize={pageSize}
             onEdit={handleEdit}
             onDelete={handleDelete}
             onView={handleViewPermissions}

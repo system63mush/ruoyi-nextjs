@@ -91,26 +91,26 @@ export default function UserPage() {
   const columns: Column[] = [
     {
       key: 'username',
-      title: '用户名',
+      label: '用户名',
       sortable: true
     },
     {
       key: 'nickname',
-      title: '昵称',
+      label: '昵称',
       sortable: true
     },
     {
       key: 'email',
-      title: '邮箱',
+      label: '邮箱',
       sortable: true
     },
     {
       key: 'phone',
-      title: '手机号'
+      label: '手机号'
     },
     {
       key: 'status',
-      title: '状态',
+      label: '状态',
       render: (value) => (
         <span className={`px-2 py-1 text-xs rounded-full ${
           value === 'active' 
@@ -123,17 +123,17 @@ export default function UserPage() {
     },
     {
       key: 'dept',
-      title: '部门',
+      label: '部门',
       sortable: true
     },
     {
       key: 'createTime',
-      title: '创建时间',
+      label: '创建时间',
       sortable: true
     },
     {
       key: 'lastLoginTime',
-      title: '最后登录',
+      label: '最后登录',
       sortable: true
     }
   ];
@@ -351,18 +351,11 @@ export default function UserPage() {
           {/* 用户列表 */}
           <DataTable
             columns={columns}
-            data={paginatedUsers}
+            data={filteredUsers}
             loading={loading}
-            pagination={{
-              current: currentPage,
-              pageSize,
-              total: filteredUsers.length,
-              onChange: (page) => setCurrentPage(page)
-            }}
+            pageSize={pageSize}
             onEdit={handleEdit}
             onDelete={handleDelete}
-            selectable={true}
-            onSelectionChange={handleBatchDelete}
           />
         </div>
 

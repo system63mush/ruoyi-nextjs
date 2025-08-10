@@ -474,17 +474,12 @@ export default function MenuPage() {
           {/* 菜单列表 */}
           <DataTable
             columns={columns}
-            data={paginatedMenus}
+            data={paginatedMenus as unknown as Record<string, unknown>[]}
             loading={loading}
-            pagination={{
-              current: currentPage,
-              pageSize,
-              total: filteredMenus.length,
-              onChange: (page) => setCurrentPage(page)
-            }}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onView={handleViewMenu}
+            pageSize={pageSize}
+            onEdit={(row) => handleEdit(row as unknown as MenuItem)}
+            onDelete={(row) => handleDelete(row as unknown as MenuItem)}
+            onView={(row) => handleViewMenu(row as unknown as MenuItem)}
           />
         </div>
 
@@ -503,7 +498,7 @@ export default function MenuPage() {
             onSubmit={handleSubmit}
             submitText={editingMenu ? '保存' : '新增'}
             loading={loading}
-            initialData={editingMenu}
+            initialData={editingMenu as unknown as Record<string, unknown>}
           />
         </Modal>
       </PageContent>

@@ -4,6 +4,12 @@ import { Menu, Home, LogOut, User, Bell, Settings, Search, Sun, Moon } from 'luc
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 
+interface Breadcrumb {
+  name: string;
+  path: string;
+  icon: React.ComponentType<{ className?: string }> | null;
+}
+
 interface HeaderProps {
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
@@ -16,9 +22,9 @@ export default function Header({ sidebarOpen, setSidebarOpen, currentPath, onLog
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   // 根据当前路径生成面包屑
-  const generateBreadcrumbs = (path: string) => {
+  const generateBreadcrumbs = (path: string): Breadcrumb[] => {
     const pathSegments = path.split('/').filter(Boolean);
-    const breadcrumbs = [{ name: '首页', path: '/', icon: Home }];
+    const breadcrumbs: Breadcrumb[] = [{ name: '首页', path: '/', icon: Home }];
     
     if (pathSegments.length > 0) {
       const pathMap: { [key: string]: string } = {

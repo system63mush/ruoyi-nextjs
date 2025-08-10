@@ -84,7 +84,7 @@ export function buildTree<T extends { id: string; parentId: string; children?: T
     }
   }
   
-  return tree.sort((a, b) => (a as { orderNum: number }).orderNum - (b as { orderNum: number }).orderNum);
+  return tree.sort((a, b) => ((a as any).orderNum || 0) - ((b as any).orderNum || 0));
 }
 
 // 扁平化树形结构

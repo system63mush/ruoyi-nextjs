@@ -1,7 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { prisma } from './prisma';
-import { User, Role, Menu } from '../types';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-here';
 
@@ -154,7 +153,7 @@ export async function getUserPermissions(userId: string): Promise<string[]> {
 }
 
 // 获取用户菜单
-export async function getUserMenus(userId: string): Promise<Menu[]> {
+export async function getUserMenus(userId: string): Promise<any[]> {
   try {
     const userRoles = await prisma.userRole.findMany({
       where: { userId },
@@ -196,7 +195,7 @@ export async function getUserMenus(userId: string): Promise<Menu[]> {
       orderBy: { orderNum: 'asc' }
     });
 
-    return menus as Menu[];
+    return menus as any[];
   } catch (error) {
     console.error('Get user menus error:', error);
     return [];
