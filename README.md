@@ -69,6 +69,7 @@ npm run dev
 - **[USAGE_GUIDE.md](./USAGE_GUIDE.md)** - 详细的使用说明文档
 - **[SCREENSHOTS_GUIDE.md](./SCREENSHOTS_GUIDE.md)** - 界面截图和功能说明
 - **[MODULES_SUMMARY.md](./MODULES_SUMMARY.md)** - 模块功能总结
+- **[DEPLOYMENT.md](./DEPLOYMENT.md)** - Vercel部署指南
 
 ### 🎯 快速导航
 - **系统管理**：用户、角色、菜单、部门、岗位管理
@@ -76,6 +77,17 @@ npm run dev
 - **系统工具**：表单构建、代码生成
 - **字典管理**：字典类型和数据管理
 - **日志管理**：操作日志和登录日志
+
+## 🚀 部署说明
+
+### Vercel部署
+项目已配置好Vercel部署，但需要配置云数据库：
+
+1. **配置数据库**：使用PlanetScale、Neon或Supabase等云数据库
+2. **设置环境变量**：在Vercel中配置`DATABASE_URL`和`JWT_SECRET`
+3. **部署项目**：连接GitHub仓库自动部署
+
+详细步骤请参考：[DEPLOYMENT.md](./DEPLOYMENT.md)
 
 ## 🔐 默认登录信息
 
