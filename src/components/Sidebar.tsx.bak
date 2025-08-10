@@ -1,0 +1,222 @@
+'use client';
+
+import React, { useState } from 'react';
+import { 
+  Settings, 
+  Database, 
+  FileText, 
+  Users, 
+  Shield, 
+  Building,
+  ChevronDown
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+interface MenuItem {
+  id: string;
+  menuName: string;
+  path?: string;
+  icon?: string;
+  children?: MenuItem[];
+}
+
+interface SidebarProps {
+  sidebarOpen: boolean;
+  setSidebarOpen: (open: boolean) => void;
+  currentPath: string;
+  onNavigate: (path: string) => void;
+}
+
+const defaultMenus: MenuItem[] = [
+  {
+    id: 'dashboard',
+    menuName: '仪表板',
+    path: '/',
+    icon: 'Settings'
+  },
+  {
+    id: 'system',
+    menuName: '系统管理',
+    icon: 'Settings',
+    children: [
+      {
+        id: 'users',
+        menuName: '用户管理',
+        path: '/system/user',
+        icon: 'Users'
+      },
+      {
+        id: 'roles',
+        menuName: '角色管理',
+        path: '/system/role',
+        icon: 'Shield'
+      },
+      {
+        id: 'menus',
+        menuName: '菜单管理',
+        path: '/system/menu',
+        icon: 'FileText'
+      },
+      {
+        id: 'dept',
+        menuName: '部门管理',
+        path: '/system/dept',
+        icon: 'Building'
+      },
+      {
+        id: 'post',
+        menuName: '岗位管理',
+        path: '/system/post',
+        icon: 'Users'
+      }
+    ]
+  },
+  {
+    id: 'monitor',
+    menuName: '系统监控',
+    icon: 'Database',
+    children: [
+      {
+        id: 'online',
+        menuName: '在线用户',
+        path: '/monitor/online',
+        icon: 'Users'
+      },
+      {
+        id: 'job',
+        menuName: '定时任务',
+        path: '/monitor/job',
+        icon: 'Database'
+      }
+    ]
+  },
+  {
+    id: 'tool',
+    menuName: '系统工具',
+    icon: 'Building',
+    children: [
+      {
+        id: 'build',
+        menuName: '表单构建',
+        path: '/tool/build',
+        icon: 'FileText'
+      },
+      {
+        id: 'gen',
+        menuName: '代码生成',
+        path: '/tool/gen',
+        icon: 'Database'
+      }
+    ]
+  }
+];
+
+export default function Sidebar({ sidebarOpen, setSidebarOpen, currentPath, onNavigate }: SidebarProps) {
+  const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set(['dashboard']));
+
+  const toggleMenu = (menuId: string) => {
+    const newExpandedMenus = new Set(expandedMenus);
+    if (newExpandedMenus.has(menuId)) {
+      newExpandedMenus.delete(menuId);
+    } else {
+      newExpandedMenus.add(menuId);
+    }
+    setExpandedMenus(newExpandedMenus);
+  };
+
+  const getIconComponent = (iconName?: string) => {
+    const iconMap: { [key: string]: any } = {
+      Settings,
+      Database,
+      FileText,
+      Users,
+      Shield,
+      Building
+    };
+    return iconMap[iconName || 'Settings'] || Settings;
+  };
+
+  const renderMenuItem = (menu: MenuItem) => {
+    const IconComponent = getIconComponent(menu.icon);
+    
+    if (menu.children) {
+      return (
+        <div key={menu.id}>
+          <button
+            onClick={() => toggleMenu(menu.id)}
+            className={cn(
+              "w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100 transition-colors",
+              expandedMenus.has(menu.id) && "bg-gray-100"
+            )}
+          >
+            <div className="flex items-center">
+              <IconComponent className="h-5 w-5 mr-3 text-gray-500" />
+              {menu.menuName}
+            </div>
+            <ChevronDown 
+              className={cn(
+                "h-4 w-4 text-gray-500 transition-transform",
+                expandedMenus.has(menu.id) && "rotate-180"
+              )}
+            />
+          </button>
+          {expandedMenus.has(menu.id) && (
+            <div className="ml-4 mt-1 space-y-1">
+              {menu.children.map(renderMenuItem)}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <button
+        key={menu.id}
+        onClick={() => menu.path && onNavigate(menu.path)}
+        className={cn(
+          "w-full flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-100 transition-colors",
+          currentPath === menu.path && "bg-blue-100 text-blue-700"
+        )}
+      >
+        <IconComponent className="h-5 w-5 mr-3 text-gray-500" />
+        {menu.menuName}
+      </button>
+    );
+  };
+
+  return (
+    <>
+      {/* 移动端侧边栏遮罩 */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+      
+      {/* 侧边栏 */}
+      <div className={cn(
+        "fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0",
+        sidebarOpen ? "translate-x-0" : "-translate-x-full"
+      )}>
+        {/* 侧边栏头部 */}
+        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
+          <h1 className="text-xl font-bold text-gray-900">若依管理系统</h1>
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
+          >
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        {/* 侧边栏菜单 */}
+        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+          {defaultMenus.map(renderMenuItem)}
+        </nav>
+      </div>
+    </>
+  );
+}

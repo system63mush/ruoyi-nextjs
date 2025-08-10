@@ -1,0 +1,244 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// 用户表
+model User {
+  id          String   @id @default(cuid())
+  username    String   @unique
+  password    String
+  nickname    String?
+  email       String?
+  phone       String?
+  avatar      String?
+  status      String   @default("0") // 0:正常 1:停用
+  loginIp     String?
+  loginDate   DateTime?
+  createBy    String?
+  createTime  DateTime @default(now())
+  updateBy    String?
+  updateTime  DateTime @updatedAt
+  remark      String?
+  
+  // 关联关系
+  userRoles   UserRole[]
+  posts       UserPost[]
+  
+  @@map("sys_user")
+}
+
+// 角色表
+model Role {
+  id          String   @id @default(cuid())
+  roleName    String
+  roleKey     String   @unique
+  roleSort    Int      @default(0)
+  dataScope   String   @default("1") // 1:全部数据权限 2:自定数据权限 3:本部门数据权限 4:本部门及以下数据权限 5:仅本人数据权限
+  menuCheckStrictly Boolean @default(false)
+  deptCheckStrictly Boolean @default(false)
+  status      String   @default("0") // 0:正常 1:停用
+  delFlag     String   @default("0") // 0:存在 2:删除
+  createBy    String?
+  createTime  DateTime @default(now())
+  updateBy    String?
+  updateTime  DateTime @updatedAt
+  remark      String?
+  
+  // 关联关系
+  userRoles   UserRole[]
+  roleMenus   RoleMenu[]
+  
+  @@map("sys_role")
+}
+
+// 用户角色关联表
+model UserRole {
+  id     String @id @default(cuid())
+  userId String
+  roleId String
+  
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, roleId])
+  @@map("sys_user_role")
+}
+
+// 菜单表
+model Menu {
+  id          String   @id @default(cuid())
+  menuName    String
+  parentId    String   @default("0")
+  orderNum    Int      @default(0)
+  path        String?
+  component   String?
+  query       String?
+  isFrame     String   @default("1") // 1:是 0:否
+  isCache     String   @default("0") // 0:缓存 1:不缓存
+  menuType    String   @default("") // M:目录 C:菜单 F:按钮
+  visible     String   @default("0") // 0:显示 1:隐藏
+  status      String   @default("0") // 0:正常 1:停用
+  perms       String?
+  icon        String?
+  createBy    String?
+  createTime  DateTime @default(now())
+  updateBy    String?
+  updateTime  DateTime @updatedAt
+  remark      String?
+  
+  // 关联关系
+  roleMenus   RoleMenu[]
+  
+  @@map("sys_menu")
+}
+
+// 角色菜单关联表
+model RoleMenu {
+  id     String @id @default(cuid())
+  roleId String
+  menuId String
+  
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  menu   Menu   @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  
+  @@unique([roleId, menuId])
+  @@map("sys_role_menu")
+}
+
+// 部门表
+model Dept {
+  id          String   @id @default(cuid())
+  parentId    String   @default("0")
+  ancestors   String   @default("")
+  deptName    String
+  orderNum    Int      @default(0)
+  leader      String?
+  phone       String?
+  email       String?
+  status      String   @default("0") // 0:正常 1:停用
+  delFlag     String   @default("0") // 0:存在 2:删除
+  createBy    String?
+  createTime  DateTime @default(now())
+  updateBy    String?
+  updateTime  DateTime @updatedAt
+  
+  @@map("sys_dept")
+}
+
+// 岗位表
+model Post {
+  id          String   @id @default(cuid())
+  postCode    String   @unique
+  postName    String
+  postSort    Int      @default(0)
+  status      String   @default("0") // 0:正常 1:停用
+  createBy    String?
+  createTime  DateTime @default(now())
+  updateBy    String?
+  updateTime  DateTime @updatedAt
+  remark      String?
+  
+  // 关联关系
+  users       UserPost[]
+  
+  @@map("sys_post")
+}
+
+// 用户岗位关联表
+model UserPost {
+  id     String @id @default(cuid())
+  userId String
+  postId String
+  
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, postId])
+  @@map("sys_user_post")
+}
+
+// 字典类型表
+model DictType {
+  id          String   @id @default(cuid())
+  dictName    String
+  dictType    String   @unique
+  status      String   @default("0") // 0:正常 1:停用
+  createBy    String?
+  createTime  DateTime @default(now())
+  updateBy    String?
+  updateTime  DateTime @updatedAt
+  remark      String?
+  
+  // 关联关系
+  dictData    DictData[]
+  
+  @@map("sys_dict_type")
+}
+
+// 字典数据表
+model DictData {
+  id          String   @id @default(cuid())
+  dictSort    Int      @default(0)
+  dictLabel   String
+  dictValue   String
+  dictType    String
+  cssClass    String?
+  listClass   String?
+  isDefault   String   @default("N") // Y:是 N:否
+  status      String   @default("0") // 0:正常 1:停用
+  createBy    String?
+  createTime  DateTime @default(now())
+  updateBy    String?
+  updateTime  DateTime @updatedAt
+  remark      String?
+  
+  // 关联关系
+  dictTypeRef DictType @relation(fields: [dictType], references: [dictType])
+  
+  @@unique([dictType, dictValue])
+  @@map("sys_dict_data")
+}
+
+// 操作日志表
+model OperLog {
+  id          String   @id @default(cuid())
+  title       String   @default("")
+  businessType String  @default("0") // 0:其它 1:新增 2:修改 3:删除 4:授权 5:导出 6:导入 7:强退 8:生成代码 9:清空数据
+  method      String?
+  requestMethod String?
+  operatorType String  @default("0") // 0:其它 1:后台用户 2:手机端用户
+  operName    String?
+  operUrl     String?
+  operIp      String?
+  operLocation String?
+  operParam   String?
+  jsonResult  String?
+  status      String   @default("0") // 0:正常 1:异常
+  errorMsg    String?
+  operTime    DateTime @default(now())
+  
+  @@map("sys_oper_log")
+}
+
+// 登录日志表
+model LoginLog {
+  id          String   @id @default(cuid())
+  userName    String?
+  ipaddr      String?
+  loginLocation String?
+  browser     String?
+  os          String?
+  status      String   @default("0") // 0:成功 1:失败
+  msg         String?
+  loginTime   DateTime @default(now())
+  
+  @@map("sys_login_log")
+}
